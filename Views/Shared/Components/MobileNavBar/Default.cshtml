@@ -15,26 +15,23 @@
             <div class="mobile-nav-bar__tabs">
                 <a asp-route="profile"
                    class="mobile-nav-bar__tab"
-                >
-                    Profile
-                </a>
+                >Profile</a>
                 <a asp-route="public_message"
                    class="mobile-nav-bar__tab"
-                >
-                    Public
-                </a>
-                <a asp-route="protected_message"
+                >Public</a>
+                @if (Model != null && Model.isAuthenticated)
+                {
+                    <a asp-route="protected_message"
+                        class="mobile-nav-bar__tab"
+                    >Protected</a>
+                    <a asp-route="admin_message"
                     class="mobile-nav-bar__tab"
-                >
-                    Protected
-                </a>
-                <a asp-route="admin_message"
-                   class="mobile-nav-bar__tab"
-                >
-                    Admin
-                </a>
+                    >Admin</a>
+                }
             </div>
-            <div class="mobile-nav-bar__buttons"></div>
+            <div class="mobile-nav-bar__buttons">
+                <vc:authentication-button is-authenticated=@(Model?.isAuthenticated ?? false)></vc:authentication-button>
+            </div>
         </div>
     </nav>
 </div>

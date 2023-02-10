@@ -4,9 +4,9 @@ namespace App.Services;
 
 public class MessageService : IMessageService
 {
-    public Message GetAdminMessage()
+    public Message GetPublicMessage()
     {
-        return new Message { text = "This is an admin message." };
+        return new Message { text = "This is a public message." };
     }
 
     public Message GetProtectedMessage()
@@ -14,8 +14,8 @@ public class MessageService : IMessageService
         return new Message { text = "This is a protected message." };
     }
 
-    public Message GetPublicMessage()
+    public Message GetAdminMessage()
     {
-        return new Message { text = "This is a public message." };
+        return new Message { text = "This is an admin message." };
     }
 }

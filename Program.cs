@@ -1,5 +1,7 @@
 using App.Services;
+using Auth0.AspNetCore.Authentication;
 using dotenv.net;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,11 +21,31 @@ builder.Services.AddScoped<IMessageService, MessageService>();
 
 builder.Services.AddScoped<IJsonEncoder, JsonEncoder>();
 
+builder.Services.AddAuth0WebAppAuthentication(configureOptions =>
+{
+    configureOptions.Domain = builder.Configuration.GetValue<string>("AUTH0_DOMAIN", "");
+    configureOptions.ClientId = builder.Configuration.GetValue<string>("AUTH0_CLIENT_ID", "");
+    configureOptions.ClientSecret = builder.Configuration.GetValue<string>("AUTH0_CLIENT_SECRET", "");
+    configureOptions.CallbackPath = builder.Configuration.GetValue<string>("AUTH0_CALLBACK_PATH", "");
+    configureOptions.Scope = "openid profile email";
+    configureOptions.SkipCookieMiddleware = true;
+});
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+{
+    options.LoginPath = "/login";
+    options.LogoutPath = "/logout";
+});
+
 var app = builder.Build();
 
 var requiredVars =
     new string[] {
           "PORT",
+          "AUTH0_DOMAIN",
+          "AUTH0_CLIENT_ID",
+          "AUTH0_CLIENT_SECRET",
+          "AUTH0_CALLBACK_PATH"
     };
 
 foreach (var key in requiredVars)
@@ -36,6 +58,12 @@ foreach (var key in requiredVars)
     }
 }
 
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+    Secure = CookieSecurePolicy.Always
+});
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseStaticFiles();
 app.UseExceptionHandler("/error");
 app.UseStatusCodePagesWithReExecute("/error");

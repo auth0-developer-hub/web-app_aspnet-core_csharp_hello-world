@@ -7,6 +7,6 @@ public class MobileNavBarViewComponent : ViewComponent
 {
     public IViewComponentResult Invoke(string activeRoute)
     {
-        return View(new NavBarModel(activeRoute));
+        return View(new NavBarModel(activeRoute, User?.Identity?.IsAuthenticated ?? false));
     }
 }
