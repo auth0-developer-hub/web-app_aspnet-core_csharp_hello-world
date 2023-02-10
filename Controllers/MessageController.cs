@@ -1,4 +1,5 @@
 using App.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,15 +41,25 @@ public class MessageController : Controller
 
     [HttpGet("/admin", Name = "admin_message")]
     [Authorize]
-    public ViewResult AdminMessage()
+    public async Task<ViewResult> AdminMessage()
     {
         ViewData["MessageType"] = "Admin";
         ViewData["Description"] = @"<strong>
             Only authenticated users with the <code>read:admin-messages</code> permission should access this page.
         </strong>";
 
-        ViewData["Response"] = _jsonEncoder.Encode(_messageService.GetAdminMessage());
+        var token = await GetAccessToken();
+        var message = await _messageService.GetAdminMessage(token);
+
+        ViewData["Response"] = _jsonEncoder.Encode(message.IsSuccessful() ? message.message : message.error);
 
         return View("Views/Pages/Message.cshtml");
+    }
+
+    private async Task<string> GetAccessToken()
+    {
+        var token = await HttpContext.GetTokenAsync("access_token");
+
+        return token == null ? "" : token;
     }
 }

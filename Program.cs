@@ -29,6 +29,10 @@ builder.Services.AddAuth0WebAppAuthentication(configureOptions =>
     configureOptions.CallbackPath = builder.Configuration.GetValue<string>("AUTH0_CALLBACK_PATH", "");
     configureOptions.Scope = "openid profile email";
     configureOptions.SkipCookieMiddleware = true;
+})
+.WithAccessToken(options =>
+{
+    options.Audience = builder.Configuration.GetValue<string>("AUTH0_AUDIENCE", "");
 });
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
@@ -45,7 +49,9 @@ var requiredVars =
           "AUTH0_DOMAIN",
           "AUTH0_CLIENT_ID",
           "AUTH0_CLIENT_SECRET",
-          "AUTH0_CALLBACK_PATH"
+          "AUTH0_CALLBACK_PATH",
+          "AUTH0_AUDIENCE",
+          "API_SERVER_URL"
     };
 
 foreach (var key in requiredVars)

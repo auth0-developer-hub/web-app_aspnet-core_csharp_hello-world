@@ -6,5 +6,5 @@ public interface IMessageService
 {
     Message GetPublicMessage();
     Message GetProtectedMessage();
-    Message GetAdminMessage();
+    Task<ApiResponse> GetAdminMessage(string accessToken);
 }
